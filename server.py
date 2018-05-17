@@ -30,18 +30,19 @@ def connection_handler(conn, addr, c):
                 print("serialization")
                 serialized = pickle.dumps(c)
                 conn.sendall(serialized)
-                return
+                
+                break
             else:
                 print("not yet suppported... sry")
             
             conn.sendall(response.to_bytes(16, byteorder=sys.byteorder, signed=True))
-            # return
+            
 
 if __name__ == '__main__':
     import socket
     import sys
     from counter import Counter
-    import _thread as t
+    # import _thread as t
 
     c = Counter()
 
@@ -73,5 +74,5 @@ if __name__ == '__main__':
                 sys.exit(1)
             
             connection_handler(conn, addr, c)
-
+           
             # t.start_new_thread(connection_handler, (conn, addr, c))

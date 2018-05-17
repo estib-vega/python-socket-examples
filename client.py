@@ -48,7 +48,9 @@ if __name__ == '__main__':
                 s.sendall(msg)
                 # receive response in buffered 1024 bytes
                 data = s.recv(1024)
-                if not data: break
+                if not data: 
+                    print("server ended connection")
+                    sys.exit(1)
                 if not ser:
                     response = int.from_bytes(data, byteorder=sys.byteorder, signed=True)
                     print('received:', response)
