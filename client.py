@@ -2,6 +2,7 @@
 if __name__ == '__main__':
     import socket
     import sys
+    import pickle
 
     if len(sys.argv) != 3:
         print("should have a host and port as argument...")
@@ -15,6 +16,8 @@ if __name__ == '__main__':
         # stablish connection
         try:
             s.connect((HOST, PORT))
+
+            ser = False
 
             while True:
                 cmd = input("command:")
@@ -33,6 +36,10 @@ if __name__ == '__main__':
                 elif cmd == "e":
                     print("exiting programm\nclosing connection")
                     break
+                elif cmd == 'p':
+                    print("asking for a serialized counter...")
+                    msg = b'p'
+                    ser = True
                 else:
                     print("invalid command")
                     continue
@@ -40,9 +47,17 @@ if __name__ == '__main__':
                 # attempt to send all data
                 s.sendall(msg)
                 # receive response in buffered 1024 bytes
-                data = s.recv(16)
-                response = int.from_bytes(data, byteorder=sys.byteorder, signed=True)
-                print('received:', response)
+                data = s.recv(1024)
+                if not data: break
+                if not ser:
+                    response = int.from_bytes(data, byteorder=sys.byteorder, signed=True)
+                    print('received:', response)
+                else:
+                    obj = pickle.loads(data)
+                    print(obj)
+                    print(obj.__dir__)
+                    print(obj.counter)
+                    print(obj.increment())
         except:
             print("unable to connect to", HOST, PORT)
        
