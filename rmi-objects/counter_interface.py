@@ -1,20 +1,19 @@
 class RemoteCounter:
     def __init__(self):
-        print('in-p')
         pass
 
     def increment(self):
-        print('i-p')
-        pass
+        raise NotImplementedError
+        
 
     def decrement(self):
-        print('d-p')
-        pass
+        raise NotImplementedError
+        
     
     def set_value(self, value):
-        print('s-p')
-        pass
+        raise NotImplementedError
+        
     
     def reset(self):
-        print('r-p')
-        pass
+        raise NotImplementedError
+        

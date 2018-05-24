@@ -8,7 +8,6 @@ class ClientCounter (RemoteCounter):
         self.port = port
 
     def increment(self):
-        # open connection
         # send command for increment
         return self.send_command('i')
 
