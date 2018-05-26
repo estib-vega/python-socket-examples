@@ -48,8 +48,6 @@ def lookup(addr, name):
                 # it doesn't change all the previous definitions
                 @constant_key(key)
                 def dynamic_method(k, *args, **kwargs):
-                    print('dynamically implemented ' + k)
-                    print(name, args, kwargs, k)
 
                     # open connection and send the corresponding commands
                     import socket
