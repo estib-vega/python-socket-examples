@@ -1,6 +1,4 @@
-from counter_interface import RemoteCounter
-
-class Counter(RemoteCounter):
+class Counter:
     def __init__(self):
         self.counter = 0
 

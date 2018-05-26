@@ -42,15 +42,62 @@ class RemoteServer:
                     
                     print('request:', req)
 
-                    # resp = ""
+                    req_list = list(req.split('-'))
 
-                    # look for the name in the object dictionary
-                    if req in self.object_dictionary:
-                        resp = pickle.dumps(self.object_dictionary[req])
+                    if len(req_list) == 1:
+                        # look for the name in the object dictionary
+                        if req in self.object_dictionary:
+                            resp = pickle.dumps(self.object_dictionary[req])
+                        else:
+                            resp = b'---object not found'
                     else:
-                        resp = b'---object not found'
+                        # if the request has multiple arguments
+                        # then it means it's a method call
+
+                        from ast import literal_eval
+
+                        # the first parameter must be a dictionary key
+                        if not req_list[0] in self.object_dictionary:
+                            resp = b'---object not found'
+                            conn.sendall(resp)
+                            continue
+                        
+                        # the arguments must be a valid tuple and a valid dictionary
+                        # try:
+
+                        #     args = literal_eval(req_list[1])
+                        #     kwargs = literal_eval(req_list[2])
+
+                        #     with self.object_dictionary[req_list[0]] as obj:
+
+                        #         if not hasattr(obj, req_list[3]):
+                        #             resp = b'---object does not have attribute requested'
+                        #             conn.sendall(resp)
+                        #             continue
+                                
+                        #         result = getattr(obj, req_list[3])(*args, **kwargs)
+                        #         resp = str(result).encode()
+
+                        # except Exception as e:
+                        #     print('Error parsing arguments', e)
+                        #     resp = b'---invalid args or kwargs'
+
+                        args = literal_eval(req_list[1])
+                        kwargs = literal_eval(req_list[2])
+
+                        obj = self.object_dictionary[req_list[0]]
+
+                        if not hasattr(obj, req_list[3]):
+                            resp = b'---object does not have attribute requested'
+                            conn.sendall(resp)
+                            continue
+                        
+                        result = getattr(obj, req_list[3])(*args, **kwargs)
+                        resp = str(result).encode()
+
 
                     conn.sendall(resp) 
+
 
 
 

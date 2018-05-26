@@ -17,8 +17,6 @@ def main():
     while True:
         cmd = input('command:')
 
-        val = None
-
         if cmd == "i":
             # increment
             val = my_c.increment()
