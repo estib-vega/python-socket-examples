@@ -1,5 +1,5 @@
 
-if __name__ == '__main__':
+def main():
     import socket
     import sys
     from counter import Counter
@@ -67,3 +67,7 @@ if __name__ == '__main__':
                     response = res.to_bytes(1024, sys.byteorder, signed=True)
                     
                     conn.sendall(response)
+
+
+if __name__ == '__main__':
+    main()
