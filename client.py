@@ -1,8 +1,48 @@
-# client
-if __name__ == '__main__':
-    import socket
+def cmd_interpreter(sys, my_c):
+    method_list = list(dir(my_c))
+    callables = []
+    print('avilible methods:')
+
+    # save the callable methods so they can be 
+    # dynamically called upon
+    for m in method_list:
+        if not str(m).startswith('__'):
+            method = getattr(my_c, m)
+            if callable(method):
+                callables.append(m)
+                # show them
+                print(str(len(callables) - 1), 'for', str(m))
+                
+    print('e for exiting programm')
+    
+    # command loop
+    while True:
+        cmd = input('command: ')
+
+        if cmd == "e":
+            # exit
+            print("exiting programm...")
+            sys.exit(1)
+        else:
+            try:
+                c_list = list(cmd.split())
+                if len(c_list) == 1:
+                    i = int(cmd)
+                    val = getattr(my_c, callables[i])()
+                else:
+                    i = int(c_list[0])
+                    args = tuple(c_list[1::])
+                    val = getattr(my_c, callables[i])(*args)
+
+                print("result:", val)
+                
+            except:
+                print('could not parse command\ninvalid command')
+
+
+def main():
+    from remote_client import lookup
     import sys
-    import pickle
 
     if len(sys.argv) != 3:
         print("should have a host and port as argument...")
@@ -11,56 +51,17 @@ if __name__ == '__main__':
     HOST = sys.argv[1]
     PORT = int(sys.argv[2])
 
-    with socket.socket() as s: # close after finished
-        print("stablishing connection to", HOST, PORT)
-        # stablish connection
-        try:
-            s.connect((HOST, PORT))
+    # get object to be looked for
+    name = input('object name to be looked for: ')
 
-            ser = False
+    my_c = lookup((HOST, PORT), name)
 
-            while True:
-                cmd = input("command:")
+    if not my_c:
+        sys.exit(1)
 
-                msg = ""
+    cmd_interpreter(sys, my_c)
 
-                if cmd == "i":
-                    print("incrementing...")
-                    msg = b'i'
-                elif cmd == "r":
-                    print("reseting...")
-                    msg = b'r'
-                elif cmd == "d":
-                    print("decrementing...")
-                    msg = b'd'
-                elif cmd == "e":
-                    print("exiting programm\nclosing connection")
-                    break
-                elif cmd == 'p':
-                    print("asking for a serialized counter...")
-                    msg = b'p'
-                    ser = True
-                else:
-                    print("invalid command")
-                    continue
 
-                # attempt to send all data
-                s.sendall(msg)
-                # receive response in buffered 1024 bytes
-                data = s.recv(1024)
-                if not data: 
-                    print("server ended connection")
-                    sys.exit(1)
-                if not ser:
-                    response = int.from_bytes(data, byteorder=sys.byteorder, signed=True)
-                    print('received:', response)
-                else:
-                    obj = pickle.loads(data)
-                    print(obj)
-                    print(obj.__dir__)
-                    print(obj.counter)
-                    print(obj.increment())
-        except:
-            print("unable to connect to", HOST, PORT)
-       
-        
+
+if __name__ == '__main__':
+    main()

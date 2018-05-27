@@ -39,10 +39,21 @@ def lookup(addr, name):
 
         obj_dir = dir(obj)
 
+
+        # inspect number of arguments
+        from inspect import signature
+
         for key in list(obj_dir):
             method = getattr(obj, key)
             if callable(method) and not key.startswith('__'):
+                # inspect number of parameters
+                params = signature(method).parameters
                 
+                p_len = len(params)
+                if p_len > 0:
+                    print('\nthe method', key, 'has this many arguments:', str(p_len))
+                    print('call method and parameters separated by spaces\n')
+
                 # reimplements the methods for remote method invocation
                 # uses a decorator so that everytime the function is defined, 
                 # it doesn't change all the previous definitions
@@ -60,6 +71,10 @@ def lookup(addr, name):
                         data = sock.recv(1024)
 
                         result = data.decode(errors='ignore')
+                
+                        # error message
+                        if str(result).startswith('---'):
+                            return 'server error - ' + result[3::]
 
                         return result
 

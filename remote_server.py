@@ -78,7 +78,13 @@ class RemoteServer:
                             conn.sendall(resp)
                             continue
                         
-                        result = getattr(obj, method)(*args, **kwargs)
+                        # error handling for wrong args
+                        try:
+                            result = getattr(obj, method)(*args, **kwargs)
+                        except Exception as e:
+                            print('error while calling', method)
+                            result = '---' + str(e)
+
                         resp = str(result).encode()
                     else:
                         resp = b'---invalid message'
