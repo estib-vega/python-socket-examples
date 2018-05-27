@@ -20,12 +20,14 @@ class Counter:
             return self.counter
         except:
             print('could not set value')
-            return '---set_value() param must be an int'
-        
-        
-        
+            return '---set_value() param must be an int'  
     
     def reset(self):
         self.counter = 0
         print('reseted')
+        return self.counter
+
+    def exponentialize(self):
+        self.counter *= self.counter
+        print('exponentialized')
         return self.counter
